@@ -28,8 +28,8 @@ void drive(int,int);
 void setOffset();
 void filtering();
 
-const int BLACK = 600;
-const int CLIFF = 1000;
+const int BLACK = 400;
+const int CLIFF = 1022;
 const float ACCELERATION = 1.001;
 const float DECELERATION = 0.95;
 const int SPEED_MAX = 120;
@@ -50,124 +50,122 @@ void task_main(intptr_t exinf){
 
 	}
 	dly_tsk(1000);
-	while(sw1 != 0){
-		zumo.buzzerOn();
-	}
-
-	dly_tsk(1000);
 	setOffset();
 	while(1){
-		//speed‚ª100‚É‚È‚é‚Ü‚Å‰Á‘¬
+		//speedãŒ100ã«ãªã‚‹ã¾ã§åŠ é€Ÿ
 		if(speed >= 100){
-			//speed‚ª100ˆÈã‚È‚çbreak
+			//speedãŒ100ä»¥ä¸Šãªã‚‰break
 			break;
 		}
 		drive(100,1);
 	}
 	dly_tsk(500);
-	//plain‚Ìˆ—
+	//plainã®å‡¦ç†
 	plain();
 
-	//slope‚Ìˆ—
+	//slopeã®å‡¦ç†
 	slope();
 
-	//top‚Ìˆ—
+	//topã®å‡¦ç†
 	top();
 
-	//cliff‚Ìˆ—
+	//cliffã®å‡¦ç†
 	cliff();
 
-	//goal‚Ü‚Å‚Ìˆ—
+	//goalã¾ã§ã®å‡¦ç†
 	goal();
 }
 
 void plain(){
 	while(1){
-		//‘Oi
+		//å‰é€²
 		drive(150,1);
-		//â“¹ŒŸo
+		//å‚é“æ¤œå‡º
 		if(searchSlope()){
-			//â“¹‚ğŒŸo‚µ‚½‚çbreak
+			//å‚é“ã‚’æ¤œå‡ºã—ãŸã‚‰break
 			break;
 		}
 	}
 }
 
 void slope(){
-	//LED1‚ğ“_“”
+	//LED1ã‚’ç‚¹ç¯
 	led_r = 1;
 	while(1){
-		//‘Oi
-		drive(80,2);
-		//ƒgƒbƒvƒGƒŠƒA‚ğŒŸo
+		//å‰é€²
+		drive(250,1);
+		//ãƒˆãƒƒãƒ—ã‚¨ãƒªã‚¢ã‚’æ¤œå‡º
 		if(searchTop()){
-			//ƒgƒbƒvƒGƒŠƒA‚ğŒŸo‚µ‚½‚çbreak
+			//ãƒˆãƒƒãƒ—ã‚¨ãƒªã‚¢ã‚’æ¤œå‡ºã—ãŸã‚‰break
 			break;
 		}
 	}
 }
 
 void top(){
-	//’â~
+	//åœæ­¢
 	drive(0,0);
-	//LED1‚ğÁ“”
+	//LED1ã‚’æ¶ˆç¯
 	led_r = 0;
-	//LED2‚ğ3•bŠÔ“_–Å
+	//LED2ã‚’3ç§’é–“ç‚¹æ»…
 	led_blink(led_g);
 }
 
 void cliff(){
 	while(1){
-		//‘Oi
+		//å‰é€²
 		drive(100,0);
-		//•üŒŸo
+		//é»’ç·šæ¤œå‡º
 		if(searchBlack()){
-			//•ü‚ğŒŸo‚µ‚½‚çLED3‚ğ“_“”‚µbreak
+			//é»’ç·šã‚’æ¤œå‡ºã—ãŸã‚‰LED3ã‚’ç‚¹ç¯ã—break
 			led_b = 1;
 			break;
 		}
 	}
 
-	zumo.driveTank(150,0);
+	dly_tsk(250);
 	while(1){
-		//‘Oi
+		//æ¸›é€Ÿã—ãªãŒã‚‰å‰é€²
 		drive(0,2);
 
-		//ŠRŒŸo
+		//å´–æ¤œå‡º
 		if(searchCliff()){
-			//ŠR‚ğŒŸo‚µ‚½‚ç’â~‚µ‚ÄLED3‚ğÁ“”‚µbreak
+			//å´–ã‚’æ¤œå‡ºã—ãŸã‚‰åœæ­¢ã—ã¦LED3ã‚’æ¶ˆç¯ã—break
 			drive(0,0);
 			led_b = 0;
+			led_r = 1;
 			break;
 		}
 		if(speed == 0){
 			break;
 		}
 	}
+	dly_tsk(500);
 }
 
 void goal(){
-	//ŠR‚ğ’Eo‚·‚é‚Ü‚ÅŒãi
+	//å´–ã‚’è„±å‡ºã™ã‚‹ã¾ã§å¾Œé€²
 	while(searchCliff()){
 		drive(-100,2);
 	}
-
+	dly_tsk(200);
 	while(1){
-			//Œãi
-			drive(-100,2);
-			//•üŒŸo(1–{–Ú)
-			if(searchBlack()){
-				//•ü‚ğŒŸo‚µ‚½‚çbreak
-				break;
-			}
-		}
-
-	while(1){
-		//Œãi
+		//å¾Œé€²
 		drive(-100,2);
-		//•üŒŸo
+		//é»’ç·šæ¤œå‡º(1æœ¬ç›®)
 		if(searchBlack()){
-			//•ü‚ğŒŸo‚µ‚½‚ç’â~‚µ‚Äbreak
+			//é»’ç·šã‚’æ¤œå‡ºã—ãŸã‚‰break
+			break;
+		}
+	}
+
+	dly_tsk(300);
+	while(1){
+		//å¾Œé€²
+		drive(-150,2);
+		//é»’ç·šæ¤œå‡º
+		if(searchBlack()){
+			//é»’ç·šã‚’æ¤œå‡ºã—ãŸã‚‰åœæ­¢ã—ã¦break
 			drive(0,0);
 			break;
 		}
@@ -175,10 +173,10 @@ void goal(){
 }
 
 bool searchSlope(){
-	//‰Á‘¬“x‚ğæ“¾
+	//åŠ é€Ÿåº¦ã‚’å–å¾—
 	filtering();
 	if(x > 2500){
-		//x•ûŒü‚Ì‰Á‘¬“x2500ˆÈã‚È‚çâ“¹”­Œ©
+		//xæ–¹å‘ã®åŠ é€Ÿåº¦2500ä»¥ä¸Šãªã‚‰å‚é“ç™ºè¦‹
 		return true;
 	}else{
 		return false;
@@ -186,10 +184,10 @@ bool searchSlope(){
 }
 
 bool searchTop(){
-	//‰Á‘¬“x‚ğæ“¾
+	//åŠ é€Ÿåº¦ã‚’å–å¾—
 	filtering();
 	if(x < 2500){
-		//x•ûŒü‚Ì‰Á‘¬“x2500ˆÈ‰º‚È‚çƒgƒbƒv”­Œ©
+		//xæ–¹å‘ã®åŠ é€Ÿåº¦2500ä»¥ä¸‹ãªã‚‰ãƒˆãƒƒãƒ—ç™ºè¦‹
 		return true;
 	}else{
 		return false;
@@ -209,10 +207,10 @@ void led_blink(DigitalOut led){
 bool searchBlack(){
 	unsigned int IR_values[6];
 
-	//IRƒZƒ“ƒT’l‚ğæ“¾
+	//IRã‚»ãƒ³ã‚µå€¤ã‚’å–å¾—
 	zumo.readAnalogIrValue(IR_values);
 	if(IR_values[0] > BLACK){
-		//’l‚ªè‡’lˆÈã‚È‚ç•ü”­Œ©
+		//å€¤ãŒé–¾å€¤ä»¥ä¸Šãªã‚‰é»’ç·šç™ºè¦‹
 		return true;
 	}else{
 		return false;
@@ -222,10 +220,10 @@ bool searchBlack(){
 bool searchCliff(){
 	unsigned int IR_values[6];
 
-	//IRƒZƒ“ƒT’l‚ğæ“¾
+	//IRã‚»ãƒ³ã‚µå€¤ã‚’å–å¾—
 	zumo.readAnalogIrValue(IR_values);
 	if(IR_values[0] > CLIFF){
-		//’l‚ªè‡’lˆÈã‚È‚çŠR”­Œ©
+		//å€¤ãŒé–¾å€¤ä»¥ä¸Šãªã‚‰å´–ç™ºè¦‹
 		return true;
 	}else{
 		return false;
@@ -235,28 +233,28 @@ bool searchCliff(){
 int accel(int max){
 	int sp;
 	bool pn = 0;
-	//–Ú•W’l‚ª•‰‚Ìê‡‚ğ‹L‰¯
+	//ç›®æ¨™å€¤ãŒè² ã®å ´åˆã‚’è¨˜æ†¶
 	if(max < 0){
 		pn = 1;
 		max = -max;
 	}
-	//speed‚ÌŒ»İ’l‚É‰Á‘¬“x‚ğæ‚¶‚Ä•Ô‚·
+	//speedã®ç¾åœ¨å€¤ã«åŠ é€Ÿåº¦ã‚’ä¹—ã˜ã¦è¿”ã™
 	//sp = speed * ACCELERATION;
-	sp = speed + 1;
+	sp = speed + 4;
 	if(sp < SPEED_MIN){
-		//æ‚¶‚½Œ‹‰Ê‚ªÅ’á‘¬“xˆÈ‰º‚Å‚ ‚ê‚ÎƒXƒs[ƒh‚ğXV‚µ‚ÄÅ’á‘¬“x‚ğ•Ô‚·
+		//ä¹—ã˜ãŸçµæœãŒæœ€ä½é€Ÿåº¦ä»¥ä¸‹ã§ã‚ã‚Œã°ã‚¹ãƒ”ãƒ¼ãƒ‰ã‚’æ›´æ–°ã—ã¦æœ€ä½é€Ÿåº¦ã‚’è¿”ã™
 		speed = SPEED_MIN;
 		if(pn == 1){
-			//max‚ª•‰‚È‚ç•‰‚Ì’l‚ğ•Ô‚·
+			//maxãŒè² ãªã‚‰è² ã®å€¤ã‚’è¿”ã™
 			return -SPEED_MIN;
 		}else{
 			return SPEED_MIN;
 		}
 	}else if(sp > max){
-		//æ‚¶‚½Œ‹‰Ê‚ª–Ú•W‘¬“xˆÈã‚Å‚ ‚ê‚ÎƒXƒs[ƒh‚ğXV‚µ‚ÄÅ‚‘¬“x‚ğ•Ô‚·
+		//ä¹—ã˜ãŸçµæœãŒç›®æ¨™é€Ÿåº¦ä»¥ä¸Šã§ã‚ã‚Œã°ã‚¹ãƒ”ãƒ¼ãƒ‰ã‚’æ›´æ–°ã—ã¦æœ€é«˜é€Ÿåº¦ã‚’è¿”ã™
 		speed = max;
 		if(pn == 1){
-			//max‚ª•‰‚È‚ç•‰‚Ì’l‚ğ•Ô‚·
+			//maxãŒè² ãªã‚‰è² ã®å€¤ã‚’è¿”ã™
 			return -max;
 		}else{
 			return max;
@@ -264,7 +262,7 @@ int accel(int max){
 	}else{
 		speed = sp;
 		if(pn == 1){
-			//max‚ª•‰‚È‚ç•‰‚Ì’l‚ğ•Ô‚·
+			//maxãŒè² ãªã‚‰è² ã®å€¤ã‚’è¿”ã™
 			return -sp;
 		}else{
 			return sp;
@@ -275,11 +273,11 @@ int accel(int max){
 int decel(int min){
 	int sp;
 
-	//speed‚ÌŒ»İ’l‚É‰Á‘¬“x‚ğæ‚¶‚Ä•Ô‚·
+	//speedã®ç¾åœ¨å€¤ã«åŠ é€Ÿåº¦ã‚’ä¹—ã˜ã¦è¿”ã™
 	//sp = speed * DECELERATION;
-	sp = speed - 1;
+	sp = speed - 4;
 	if(sp < min){
-		//æ‚¶‚½Œ‹‰Ê‚ª–Ú•W’lˆÈ‰º‚Å‚ ‚ê‚ÎƒXƒs[ƒh‚ğXV‚µ‚Ä–Ú•W’l‚ğ•Ô‚·
+		//ä¹—ã˜ãŸçµæœãŒç›®æ¨™å€¤ä»¥ä¸‹ã§ã‚ã‚Œã°ã‚¹ãƒ”ãƒ¼ãƒ‰ã‚’æ›´æ–°ã—ã¦ç›®æ¨™å€¤ã‚’è¿”ã™
 		speed = min;
 		return min;
 	}else{
@@ -289,25 +287,32 @@ int decel(int min){
 }
 
 /*
- * mode‚É‚æ‚Á‚Ä‘–sƒ‚[ƒh‚ğ•ÏX
- * 0:’Êíƒ‚[ƒh
- * 1:‰Á‘¬ƒ‚[ƒh
- * 2:Œ¸‘¬ƒ‚[ƒh
+ * modeã«ã‚ˆã£ã¦èµ°è¡Œãƒ¢ãƒ¼ãƒ‰ã‚’å¤‰æ›´
+ * 0:é€šå¸¸ãƒ¢ãƒ¼ãƒ‰
+ * 1:åŠ é€Ÿãƒ¢ãƒ¼ãƒ‰
+ * 2:æ¸›é€Ÿãƒ¢ãƒ¼ãƒ‰
+ * 3:æ€¥åŠ é€Ÿãƒ¢ãƒ¼ãƒ‰
+ * 4:æ€¥æ¸›é€Ÿãƒ¢ãƒ¼ãƒ‰
  */
 void drive(int sp,int mode){
-	//mode‚É‚æ‚Á‚Ä’Êí‰Á‘¬Œ¸‘¬‚ğØ‚è‘Ö‚¦‚é
+	//modeã«ã‚ˆã£ã¦é€šå¸¸åŠ é€Ÿæ¸›é€Ÿã‚’åˆ‡ã‚Šæ›¿ãˆã‚‹
 	switch(mode){
 	case 0:
-		//’Êíƒ‚[ƒh‚Ìˆ—
+		//é€šå¸¸ãƒ¢ãƒ¼ãƒ‰ã®å‡¦ç†
 		zumo.driveTank(sp,sp);
+		speed = sp;
 		break;
 	case 1:
-		//‰Á‘¬ƒ‚[ƒh‚Ìˆ—
-		zumo.driveTank(accel(sp),accel(sp));
+		//åŠ é€Ÿãƒ¢ãƒ¼ãƒ‰ã®å‡¦ç†
+		sp = accel(sp);
+		zumo.driveTank(sp,sp);
 		break;
 	case 2:
-		//Œ¸‘¬ƒ‚[ƒh‚Ìˆ—
-		zumo.driveTank(decel(sp),decel(sp));
+		//æ¸›é€Ÿãƒ¢ãƒ¼ãƒ‰ã®å‡¦ç†
+		sp = decel(sp);
+		zumo.driveTank(sp,sp);
+		break;
+	case 3:
 		break;
 	}
 	dly_tsk(50);
@@ -319,7 +324,6 @@ void setOffset(){
 
 	x_offset=y_offset=z_offset=0;
 	dly_tsk(100);
-	pc.printf("Setting offset...\r\n");
 
 
 	for (i=0;i<buf_size*20;i++){
@@ -333,7 +337,6 @@ void setOffset(){
 	y_offset/=(buf_size*20);
 	z_offset/=(buf_size*20);
 
-	pc.printf("offset:\t%d,\t%d,\t%d\r\n", x_offset, y_offset, z_offset);
 	dly_tsk(500);
 }
 
